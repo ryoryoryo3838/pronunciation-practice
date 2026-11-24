@@ -501,6 +501,8 @@ border-radius:999px;padding:4px 11px;cursor:pointer;white-space:nowrap}.chip:hov
 .chip:disabled{opacity:.4;cursor:default}.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .top h1{margin:0;flex:1}
+.seg{display:inline-flex;gap:4px;background:var(--card);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+.seg .chip{border:0}
 .legend{font-size:12px;color:var(--sub);margin:0 0 16px;line-height:1.8}
 .legend i{font-style:normal;padding:0 2px}
 .ln-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
@@ -601,9 +603,12 @@ line.mid{stroke:var(--line);stroke-width:1}
   <div class="top">
     <button class="ghost" id="back">← 戻る</button>
     <h1 id="an-title"></h1>
+    <span class="seg" role="group" aria-label="語をクリックしたときの再生">
+      <button class="chip" data-mode="self">自分</button><button class="chip" data-mode="model">お手本</button><button class="chip on" data-mode="both">両方</button>
+    </span>
   </div>
   <div class="scores" id="an-scores" style="margin:0 0 16px"></div>
-  <p class="legend">語をクリックすると、その語を自分 → お手本の順に再生します。
+  <p class="legend">語をクリックすると、その語だけを再生します（上の切り替えで 自分 / お手本 / 両方）。
   <i style="color:var(--ink)">黒</i>正しい発音（辞書） <i>灰</i>聞こえた発音 <i style="color:var(--red2)">赤</i>ずれた音・強勢・抜け
   <i style="color:#2f6fde">━</i>自分のピッチ <i>┅</i>お手本のピッチ（どちらも各自の行内中央値からの半音） ‖ ポーズ（秒）</p>
   <div id="an-lines"></div>
@@ -725,7 +730,9 @@ $("history").onclick=async e=>{
 };
 
 // ---- analysis view: the app alone is enough to see and hear what went wrong
-let AN=null;
+let mode="both", AN=null;
+document.querySelectorAll(".seg .chip").forEach(c=>c.onclick=()=>{
+  mode=c.dataset.mode; document.querySelectorAll(".seg .chip").forEach(x=>x.classList.toggle("on",x===c))});
 $("back").onclick=()=>{stopPlay(); $("analysis").hidden=true; $("home").hidden=false; location.hash=""};
 const Y=(v,lo,hi)=>52-Math.min(1,Math.max(0,(v-lo)/(hi-lo||1)))*48;  // 56px band; outliers clip to the edge
 // Scale per line on the 5th-95th percentile, at least 4 semitones, so one spike does not flatten the rest.
@@ -825,7 +832,7 @@ $("an-lines").onclick=e=>{
   const line=+b.dataset.line, l=b.dataset.src==="retake"?RT[line].view:AN.lines.find(x=>x.line===line), w=l.words[b.dataset.k], items=[];
   const self=[selfSrc(b.dataset.src,l),Math.max(0,w.s/1000-0.05),w.e/1000+0.08];
   const model=w.ref_s!=null?[`/model-for/${rid}/${line}`,Math.max(0,w.ref_s/1000-0.05),w.ref_e/1000+0.08]:null;
-  items.push(self); if(model) items.push(model);  // a word click plays yours, then the model's
+  if(mode!=="model") items.push(self); if(mode!=="self"&&model) items.push(model);
   if(items.length) playSeq(b,items);
 };
 // ---- add / edit scripts: paste prose or Markdown, preview the split, save
