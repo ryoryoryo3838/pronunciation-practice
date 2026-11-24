@@ -503,6 +503,7 @@ border-radius:999px;padding:4px 11px;cursor:pointer;white-space:nowrap}.chip:hov
 .top h1{margin:0;flex:1}
 .seg{display:inline-flex;gap:4px;background:var(--card);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
 .seg .chip{border:0}
+.seg-label{font-size:12px;color:var(--sub)}
 .legend{font-size:12px;color:var(--sub);margin:0 0 16px;line-height:1.8}
 .legend i{font-style:normal;padding:0 2px}
 .ln-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
@@ -603,7 +604,8 @@ line.mid{stroke:var(--line);stroke-width:1}
   <div class="top">
     <button class="ghost" id="back">← 戻る</button>
     <h1 id="an-title"></h1>
-    <span class="seg" role="group" aria-label="語をクリックしたときの再生">
+    <span class="seg-label" id="seg-label">語をクリックしたときの再生</span>
+    <span class="seg" role="group" aria-labelledby="seg-label">
       <button class="chip" data-mode="self">自分</button><button class="chip" data-mode="model">お手本</button><button class="chip on" data-mode="both">両方</button>
     </span>
   </div>
@@ -678,8 +680,9 @@ $("rec").onclick=async()=>{
 };
 // One player for everything; a new press stops whatever is playing.
 const P=$("player"); let tok=0;
+const relabel=(b,text)=>{if(!b.classList.contains("wd")) b.textContent=text};  // word cells hold SVG + IPA: keep them
 function stopPlay(){tok++; P.pause();
-  document.querySelectorAll("[data-playing]").forEach(b=>{b.textContent=b.dataset.label; delete b.dataset.playing}); playing=null}
+  document.querySelectorAll("[data-playing]").forEach(b=>{relabel(b,b.dataset.label); delete b.dataset.playing}); playing=null}
 function clip(src,a,b){return new Promise(res=>{
   P.onended=P.onpause=()=>res(); P.onerror=()=>res();
   P.ontimeupdate=()=>{if(b!=null&&P.currentTime>=b)P.pause()};
@@ -687,9 +690,9 @@ function clip(src,a,b){return new Promise(res=>{
   P.src=src;})}
 async function playSeq(btn,items,tag){
   if(btn.dataset.playing){stopPlay();return}
-  stopPlay(); const t=tok; btn.dataset.label=btn.textContent; btn.dataset.playing=1; btn.textContent="■"; playing=tag||null;
+  stopPlay(); const t=tok; btn.dataset.label=btn.textContent; btn.dataset.playing=1; relabel(btn,"■"); playing=tag||null;
   for(const [src,a,b] of items){if(t!==tok)break; await clip(src,a,b); if(t!==tok)break; await new Promise(r=>setTimeout(r,300))}
-  if(t===tok){btn.textContent=btn.dataset.label; delete btn.dataset.playing; playing=null}
+  if(t===tok){relabel(btn,btn.dataset.label); delete btn.dataset.playing; playing=null}
 }
 $("model").onclick=()=>{
   const sc=S.scripts.find(s=>s.slide===$("script").value);
