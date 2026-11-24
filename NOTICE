@@ -1,0 +1,27 @@
+pronunciation-practice
+Copyright 2026 the pronunciation-practice contributors
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Material in this repository under other licenses
+  tests/fixtures/en-clean.mp3, en-learner-1.mp3, en-learner-2.mp3
+    Excerpts of speechocean762 (test split), CC BY 4.0, as redistributed in the Pronunciada
+    repository (site/samples). Zhang, J., et al. (2021), "speechocean762: An Open-Source
+    Non-native English Speech Corpus for Pronunciation Assessment", Interspeech 2021.
+    https://www.isca-archive.org/interspeech_2021/zhang21x_interspeech.html
+    Corpus: https://openslr.org/101/ . See tests/fixtures/ATTRIBUTION.md.
+
+Third-party software and models used but not distributed here
+  Pronunciada (Apache-2.0), https://github.com/moglearn/pronunciada
+    Downloads the acoustic model anyspeech/zipa-small-crctc-500k (CC BY 4.0) at first use.
+    Zhu et al., "ZIPA: A family of efficient models for multilingual phone recognition",
+    ACL 2025, https://github.com/lingjzhu/zipa . English pronunciations come from CMUdict
+    (BSD-2-Clause-style) shipped inside Pronunciada.
+  MCP Python SDK (MIT), numpy (BSD-3-Clause), soundfile (BSD-3-Clause), onnxruntime (MIT),
+    installed by uv from PyPI.
+  Optional extra "reference" (uv sync --extra reference), used only for the model reading:
+    kokoro-onnx (MIT), https://github.com/thewh1teagle/kokoro-onnx
+    Kokoro-82M model and voices (Apache-2.0), https://huggingface.co/hexgrad/Kokoro-82M ,
+      downloaded at first use from the kokoro-onnx model-files-v1.1 release and checked by SHA-256
+    phonemizer (GPL-3.0-or-later) and espeak-ng via espeakng-loader (GPL-3.0), pulled in by kokoro-onnx.
+      The core of this project neither imports nor needs them.
+  tunnel-client (OpenAI) is not bundled; it is obtained from https://github.com/openai/tunnel-client .

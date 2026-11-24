@@ -1,0 +1,21 @@
+[project]
+name = "pronunciation-practice"
+version = "0.1.0"
+description = "Local app for rehearsing English talks: pronunciation, stress and intonation against the script, with an optional ChatGPT coach over MCP"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.14"
+dependencies = [
+    "mcp>=2.3.0",
+    "numpy",
+    "soundfile",
+    "pronunciada>=1.1.0",
+    "starlette>=1.10.0",
+    "uvicorn>=0.54.0",
+]
+
+[project.optional-dependencies]
+reference = [
+    "kokoro-onnx>=0.6.1",
+]

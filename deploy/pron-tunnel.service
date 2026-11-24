@@ -1,0 +1,12 @@
+[Unit]
+Description=Secure MCP Tunnel for pronunciation-practice
+After=network-online.target
+
+[Service]
+EnvironmentFile=@CONF@/tunnel.env
+ExecStart=@TC@ run --profile pron --profile-dir @CONF@/tunnel
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
